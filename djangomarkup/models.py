@@ -1,25 +1,11 @@
 from django.contrib.contenttypes.generic import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import signals
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 
 from djangomarkup.processors import ProcessorConfigurationError, ProcessorError
-
-#class RichTextField(models.TextField):
-#    def __init__(self, syntax, *args, **kwargs):
-#        self.syntax = syntax
-#        super(RichTextField, self).__init__(*args, **kwargs)
-#
-#    def formfield(self, **kwargs):
-#        from djangomarkup.fields import RichTextField as RichTextFormField
-#        kwargs.update({
-#            'syntax' : self.syntax,
-#            'field_name' : self.name,
-#
-#        })
-#        return RichTextFormField(**kwargs)
 
 class TextProcessor(models.Model):
     """
