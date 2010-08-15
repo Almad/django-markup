@@ -79,7 +79,7 @@ def encapsulate_save_method(old_save_method, target_field_name, model_content_ty
 
     return overriding_save_method
 
-def modify_registered_models():
+def modify_registered_models(**kwargs):
     registered_models = getattr(settings, 'DJANGO_MARKUP_REGISTERED_FIELDS', [])
     for app_label, model_name, field_name in registered_models:
         cts = ContentType.objects.filter(app_label=app_label, model=model_name)
@@ -107,7 +107,7 @@ def modify_registered_models():
 
             model_class.djangosanetesting_save_wrapped = True
 
-def modify_registered_admin_options(admin_site):
+def modify_registered_admin_options(admin_site, **kwargs):
     if 'django.contrib.admin' not in settings.INSTALLED_APPS:
         return
     registered_models = getattr(settings, 'DJANGO_MARKUP_REGISTERED_FIELDS', [])
