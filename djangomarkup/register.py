@@ -1,12 +1,11 @@
 from django.conf import settings
 from django import forms
-from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields import Field
 
 from djangomarkup.models import SourceText, TextProcessor
 
-DEFAULT_PROCESSOR = TextProcessor.objects.get(name=getattr(settings, "DEFAULT_MARKUP", "markdown"))
+PROCESSOR_NAME = getattr(settings, "DEFAULT_MARKUP", "markdown")
 
 FIELD_PREFIX = 'djangomarkup_'
 __registration_passed = False
@@ -47,7 +46,7 @@ def generate_property(target_field_name, model_content_type, property_name):
                 content_type=model_content_type,
                 object_id=self.pk,
                 field=target_field_name,
-                processor=DEFAULT_PROCESSOR
+                processor=TextProcessor.objects.get(name=PROCESSOR_NAME)
             )
         except SourceText.DoesNotExist:
             return u''
@@ -71,7 +70,7 @@ def encapsulate_save_method(old_save_method, target_field_name, model_content_ty
             content_type=model_content_type,
             object_id=self.pk,
             field=target_field_name,
-            processor=DEFAULT_PROCESSOR
+            processor=TextProcessor.objects.get(name=PROCESSOR_NAME)
         )
         src.content = new_source
         src.save()
