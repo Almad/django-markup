@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django import forms
 from django.contrib.contenttypes.models import ContentType
@@ -9,6 +11,8 @@ PROCESSOR_NAME = getattr(settings, "DEFAULT_MARKUP", "markdown")
 
 FIELD_PREFIX = 'djangomarkup_'
 __registration_passed = False
+
+logger = logging.getLogger('djangomarkup.register')
 
 class NoopField(Field):
     " Field that does nothing. "
@@ -61,9 +65,13 @@ def encapsulate_save_method(old_save_method, target_field_name, model_content_ty
     def overriding_save_method(self, **kwargs):
         old_save_method(self, **kwargs)
         attr_name = '__value_%s' % property_name
-        new_source = getattr(self, attr_name, None)
-        delattr(self, attr_name)
-        if new_source is None:
+        
+
+        if hasattr(self, attr_name):
+            new_source = getattr(self, attr_name, None)
+            delattr(self, attr_name)
+        else:
+            logging.debug("Attribute %s not set, not generating SourceText" % attr_name)
             return
 
         src, src_created = SourceText.objects.get_or_create(
@@ -106,6 +114,9 @@ def modify_registered_models(**kwargs):
             model_class.save = encapsulate_save_method(orig_save, field_name, ct,property_name)
 
             model_class.djangosanetesting_save_wrapped = True
+
+        else:
+            logging.debug("Model %s already registered" % model_class)
 
 def modify_registered_admin_options(admin_site, **kwargs):
     if 'django.contrib.admin' not in settings.INSTALLED_APPS:
