@@ -87,22 +87,25 @@ def modify_registered_models():
             continue
         ct = cts[0]
         model_class = ct.model_class()
-        new_field_name = '%s%s' % (FIELD_PREFIX, field_name)
-        property_name = new_field_name
 
-        """
-        # set up virtual_fields
-        fld = NoopField()
-        fld.name = new_field_name
-        fld.attname = ''
-        model_class._meta.fields.append(fld)
-        """
-        # set property to the Model class named src_field_name
-        prop = generate_property(field_name, ct, property_name)
-        setattr(model_class, property_name, prop)
-        # handle Model.save own way
-        orig_save = model_class.save
-        model_class.save = encapsulate_save_method(orig_save, field_name, ct,property_name)
+        if not getattr(model_class, "djangosanetesting_save_wrapped", False):
+            new_field_name = '%s%s' % (FIELD_PREFIX, field_name)
+            property_name = new_field_name
+
+            # set up virtual_fields
+    #        fld = NoopField()
+    #        fld.name = new_field_name
+    #        fld.attname = ''
+    #        model_class._meta.fields.append(fld)
+
+            # set property to the Model class named src_field_name
+            prop = generate_property(field_name, ct, property_name)
+            setattr(model_class, property_name, prop)
+            # handle Model.save own way
+            orig_save = model_class.save
+            model_class.save = encapsulate_save_method(orig_save, field_name, ct,property_name)
+
+            model_class.djangosanetesting_save_wrapped = True
 
 def modify_registered_admin_options(admin_site):
     if 'django.contrib.admin' not in settings.INSTALLED_APPS:
