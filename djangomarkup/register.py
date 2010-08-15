@@ -135,7 +135,7 @@ def modify_registered_admin_options(admin_site):
                     admin_class.opts  # model's _meta property
                     #item['fields'] = tuple(fields)
 
-if __name__ != '__main__' and not __registration_passed:
+if __name__ != '__main__' and not __registration_passed and getattr(settings, "DJANGO_MARKUP_ENABLE_REGISTER_ON_IMPORT", True):
     from django.contrib.admin.sites import site
     modify_registered_admin_options(site)
     modify_registered_models()
