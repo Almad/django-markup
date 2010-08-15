@@ -6,7 +6,8 @@ from django.db.models.fields import Field
 
 from djangomarkup.models import SourceText, TextProcessor
 
-DEFAULT_PROCESSOR = TextProcessor.objects.get(name='markdown')
+DEFAULT_PROCESSOR = TextProcessor.objects.get(name=getattr(settings, "DEFAULT_MARKUP", "markdown"))
+
 FIELD_PREFIX = 'djangomarkup_'
 __registration_passed = False
 
